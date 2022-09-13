@@ -114,7 +114,7 @@ Resources:
           TargetGroupArn: !Ref TargetGroup
       LoadBalancerArn: !Ref LoadBalancer # Required
       Port: !FindInMap [ListenerPortMap, !Ref "AWS::Region", !Ref Stage]
-      Protocol: TCP
+      Protocol: HTTP
              
   
   Cluster:
