@@ -183,8 +183,8 @@ Resources:
           Protocol: tcp
           ContainerPort: 3000
         Essential: true 
-        Environment: #variaveis de ambiente
-        #  - Name: 
+        # Environment: #variaveis de ambiente
+        # #  - Name: 
         #    Value:  
         LogConfiguration:
           LogDriver: awslogs 
