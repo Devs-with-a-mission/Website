@@ -90,7 +90,7 @@ Resources:
       IpAddressType: ipv4
       Name: !Sub "${AppName}-nlb-${Stage}"
       Scheme: internal
-      Type: network
+      Type: application
       SecurityGroups: 
         - !FindInMap [
             FargateHtppSecurityGroupMap, 
