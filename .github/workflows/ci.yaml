@@ -43,5 +43,5 @@ jobs:
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: Website-ci 
-        template: Website/Infra/website-ci.yml
+        template: Infra/website-ci.yml
        # parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
