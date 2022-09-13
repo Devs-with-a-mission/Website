@@ -1,0 +1,229 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Creating ECS service
+
+Globals:
+  Function:
+    Timeout: 15
+Parameters:
+  Version:
+    Type: String
+    Default: "v1"
+  ServiceName:
+    Type: String
+    Default: devs-with-mission-web
+  AppName:
+    Type: String
+    Description: Name of app requiring ELB exposure
+    Default: devs-with-mission-web
+  Stage:
+    Type: String
+    Default: hml
+    AllowedValues:
+      - prd 
+      - hml
+    Description: definicao ambiente
+
+Mappings:
+  ImageMap:
+    us-east-1:
+      "hml": "907581358265.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
+  VpcMap:
+    us-east-1:
+      "hml": "vpc-09ca8a1b5a47af068"
+  NetworkLoadBalancerSecurityGroupMap:
+    us-east-1: 
+      "hml": "sg-07defd964bcf89792" 
+  FargateHtppSecurityGroupMap:
+    us-east-1: 
+      "hml": "sg-07defd964bcf89792"
+  PrivateSubnetMapAZ:
+    us-east-1: 
+      "hml": "subnet-0b54faba0e998a6e8"            
+  PublicSubnetMapAZ:
+    us-east-1: 
+      "hml": "subnet-0500c24e6d483fc1e"
+  AvailabilityZone1:
+    us-east-1: 
+      "hml": "us-east-1a"  
+  AvailabilityZone2:
+    us-east-1: 
+      "hml": "us-east-1b"
+  ApplicationEnvironmentMap:
+    us-east-1: 
+      "hml": "Staging"
+  FargateNodes:    
+    us-east-1: 
+      "hml": "2" #2
+  ListenerPortMap:
+    us-east-1: 
+      "hml": "3000"
+
+  
+Resources:
+
+#TargetGroup  
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 10
+      HealthCheckProtocol: TCP
+      HealthyThresholdCount: 2
+      Name: !Sub "${ServiceName}-tg-${Stage}"
+      Port: 3000
+      Protocol: TCP
+      # ProtocolVersion: "String"
+      # Tags:
+      #   Tags
+      # TargetGroupAttributes:
+      #   TargetGroupAttributes
+      TargetType: ip
+      
+      UnhealthyThresholdCount: 2
+      VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
+
+#LoadBalancer
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      Name: !Sub "${AppName}-nlb-${Stage}"
+      Scheme: Internal
+      Type: network
+      SecurityGroups: !Ref NetworkLoadBalancerSecurityGroupMap
+      Subnets:
+        - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+        - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+      Tags:
+        - Key: "Ambiente"
+          Value: !Ref Stage 
+        - Key: "Name"
+          Value: !Ref AppName 
+#Listener
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions: # Required
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer # Required
+      Port: !FindInMap [ListenerPortMap, !Ref "AWS::Region", !Ref Stage]
+      Protocol: TCP
+             
+  
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub "${AppName}-${Stage}"
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled 
+      Tags:
+        - Key: "Ambiente"
+          Value: !Ref Stage 
+        - Key: "Name"
+          Value: !Ref AppName 
+
+
+#Policy
+  Policy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow 
+        Action:
+        - ecs:*
+        - logs:CreateLoggroup
+        - logs:CreateLogStream
+        - logs:PutLogsEvents
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterface
+        - ec2:DeleteNetworkInterface
+        - ecr:GetAutorizationToken
+        - ecr:BatchChecklayerAvailability
+        - ecr:GetDownloadUrlForlayer
+        - ecr:BatchGetImage
+        Resource:
+        - '*'      
+  #Role
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Ref Policy
+  EcsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: !Sub "/ecs/${ServiceName}-${Stage}"  
+      RetentionInDays: 10 
+
+#EcsTask
+  EcsTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+      - Image: !FindInMap [ImageMap, !Ref "AWS::Region", !Ref Stage]
+        Cpu: 0 
+        Memory: 512
+        MemoryReservation: 384
+        Name: !Sub "${ServiceName}_container"
+        PortMappings:
+        - HostPort: 3000 
+          Protocol: tcp
+          ContainerPort: 3000
+        Essential: true 
+        Environment: #variaveis de ambiente
+        #  - Name: 
+        #    Value:  
+        LogConfiguration:
+          LogDriver: awslogs 
+          Options:
+            awslogs-group: !Ref EcsLogGroup 
+            awslogs-region: !Ref "AWS::Region"
+            awslogs-stream-prefix: ecs 
+      Cpu: "256"
+      Memory: "512"      
+      Family: !Ref AppName 
+      NetworkMode: awsvpc 
+      RequiresCompabilities:
+        - FARGATE 
+      ExecutionRoleArn: !Ref Role
+      TaskRoleArn: !Ref Role   
+
+#EcsService
+EcsService:
+  Type: AWS::ECS::Service
+  DependsOn: Listener 
+  Properties: 
+    Cluster: !Ref Cluster
+    DeploymentConfiguration:
+      MaximumPercent: 200
+      MinimumHealthyPercent: 50 
+    DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
+    LaunchType: FARGATE 
+    LoadBalancers:
+      - ContainerName: !Sub "${ServiceName}_container"
+        ContainerPort: 3000 
+        TargetGroupArn: !Ref TargetGroup 
+    NetworkConfiguration: 
+      AwsvpcConfiguration:
+        AssignPublicIp: DISABLED
+        SecurityGroups:
+          - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
+        Subnets:
+          - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+          - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]  
+    PlatformVersion: LATEST 
+    ServiceName: !Sub "${ServiceName}_${Stage}"
+    TaskDefinition: !Ref EcsTask    
