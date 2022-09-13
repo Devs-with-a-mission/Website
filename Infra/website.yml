@@ -11,7 +11,7 @@ Parameters:
     Default: "v1"
   ServiceName:
     Type: String
-    Default: devs-with-mission-web
+    Default: devs-withmission-web
   AppName:
     Type: String
     Description: Name of app requiring ELB exposure
