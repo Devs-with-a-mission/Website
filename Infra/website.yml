@@ -183,7 +183,6 @@ Resources:
         Memory: 512
         MemoryReservation: 384
         Name: !Sub "${ServiceName}_container"
-        
         PortMappings:
         - HostPort: 3000 
           Protocol: tcp
@@ -223,7 +222,7 @@ Resources:
       DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
       LaunchType: FARGATE
       LoadBalancers:
-        - ContainerName: !Sub "${AppName}"
+        - ContainerName: !Sub "${ServiceName}"
           ContainerPort: 3000
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
