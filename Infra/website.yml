@@ -206,7 +206,7 @@ Resources:
       Memory: "512"      
       Family: !Ref AppName 
       NetworkMode: awsvpc 
-      RequiresCompabilities:
+      RequiresCompatibilities:
         - FARGATE 
       ExecutionRoleArn: !Ref Role
       TaskRoleArn: !Ref Role   
