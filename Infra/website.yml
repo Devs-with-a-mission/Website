@@ -89,7 +89,7 @@ Resources:
     Properties:
       IpAddressType: ipv4
       Name: !Sub "${AppName}-nlb-${Stage}"
-      Scheme: Internal
+      Scheme: internal
       Type: network
       SecurityGroups: 
         - !FindInMap [
