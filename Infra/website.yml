@@ -169,7 +169,7 @@ Resources:
       RetentionInDays: 10 
 
 #EcsTask
-  EcsTask:
+  TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
@@ -178,21 +178,25 @@ Resources:
         Memory: 512
         MemoryReservation: 384
         Name: !Sub "${ServiceName}_container"
+        
         PortMappings:
         - HostPort: 3000 
           Protocol: tcp
           ContainerPort: 3000
         Essential: true 
-        # Environment: #variaveis de ambiente
-        # #  - Name: 
-        #    Value:  
+        Environment: #variaveis de ambiente
+          - Name: ENV 
+            Value: dev  
+          - Name: PORT 
+            Value: 3000
+
         LogConfiguration:
           LogDriver: awslogs 
           Options:
             awslogs-group: !Ref EcsLogGroup 
             awslogs-region: !Ref "AWS::Region"
             awslogs-stream-prefix: ecs 
-            
+
       Cpu: "256"
       Memory: "512"      
       Family: !Ref AppName 
@@ -203,28 +207,28 @@ Resources:
       TaskRoleArn: !Ref Role   
 
 #EcsService
-EcsService:
-  Type: AWS::ECS::Service
-  DependsOn: Listener 
-  Properties: 
-    Cluster: !Ref Cluster
-    DeploymentConfiguration:
-      MaximumPercent: 200
-      MinimumHealthyPercent: 50 
-    DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
-    LaunchType: FARGATE 
-    LoadBalancers:
-      - ContainerName: !Sub "${ServiceName}_container"
-        ContainerPort: 3000 
-        TargetGroupArn: !Ref TargetGroup 
-    NetworkConfiguration: 
-      AwsvpcConfiguration:
-        AssignPublicIp: DISABLED
-        SecurityGroups:
-          - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
-        Subnets:
-          - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
-          - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]  
-    PlatformVersion: LATEST 
-    ServiceName: !Sub "${ServiceName}_${Stage}"
-    TaskDefinition: !Ref EcsTask    
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: Listener
+    Properties:
+      Cluster: !Ref Cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: !Sub "${AppName}"
+          ContainerPort: 3000
+          TargetGroupArn: !Ref TargetGroup
+      NetworkConfiguration:
+        AwsvpcCinfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
+          Subnets:
+            - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+            - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+      PlatformVersion: LATEST
+      ServiceName: !Sub "${ServiceName}_${Stage}"
+      TaskDefinition: !Ref TaskDefinition   
