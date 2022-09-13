@@ -34,7 +34,6 @@ jobs:
         ECR_REPOSITORY: devs-with-mission
         IMAGE_TAG: latest
       run: |
-        ls -a
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
