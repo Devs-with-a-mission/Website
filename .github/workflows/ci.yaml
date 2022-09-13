@@ -8,7 +8,7 @@ jobs:
   
   build:
     
-    name: Build Image
+    name: Deploy website
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -44,5 +44,6 @@ jobs:
       with:
         name: Website-ci 
         template: Infra/website.yml
-        capabilities : CAPABILITY_AUTO_EXPAND
+        capabilities : CAPABILITY_IAM
+          
        # parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
