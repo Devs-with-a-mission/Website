@@ -167,7 +167,7 @@ Resources:
       Path: /
       ManagedPolicyArns:
         - !Ref Policy
-  LogGroup:
+  EcsLogGroup:
     Type: AWS::Logs::LogGroup
     Properties: 
       LogGroupName: !Sub "/ecs/${ServiceName}-${Stage}"  
