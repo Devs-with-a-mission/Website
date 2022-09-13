@@ -131,23 +131,23 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
-      Version: '2012-10-17'
-      Statement:
-      - Effect: Allow 
-        Action:
-        - ecs:*
-        - logs:CreateLoggroup
-        - logs:CreateLogStream
-        - logs:PutLogsEvents
-        - ec2:CreateNetworkInterface
-        - ec2:DescribeNetworkInterface
-        - ec2:DeleteNetworkInterface
-        - ecr:GetAutorizationToken
-        - ecr:BatchChecklayerAvailability
-        - ecr:GetDownloadUrlForlayer
-        - ecr:BatchGetImage
-        Resource:
-        - '*'      
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow 
+          Action:
+          - ecs:*
+          - logs:CreateLoggroup
+          - logs:CreateLogStream
+          - logs:PutLogsEvents
+          - ec2:CreateNetworkInterface
+          - ec2:DescribeNetworkInterface
+          - ec2:DeleteNetworkInterface
+          - ecr:GetAutorizationToken
+          - ecr:BatchChecklayerAvailability
+          - ecr:GetDownloadUrlForlayer
+          - ecr:BatchGetImage
+          Resource:
+          - '*'      
   #Role
   Role:
     Type: AWS::IAM::Role
