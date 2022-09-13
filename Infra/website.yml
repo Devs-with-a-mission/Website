@@ -91,7 +91,12 @@ Resources:
       Name: !Sub "${AppName}-nlb-${Stage}"
       Scheme: Internal
       Type: network
-      SecurityGroups: !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage ]
+      SecurityGroups: 
+        - !FindInMap [
+            FargateHtppSecurityGroupMap, 
+            !Ref "AWS::Region", 
+            !Ref Stage,
+             ]
       Subnets:
         - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
         - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
