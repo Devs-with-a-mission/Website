@@ -44,4 +44,5 @@ jobs:
       with:
         name: Website-ci 
         template: Infra/website.yml
+        capabilities : CAPABILITY_AUTO_EXPAND
        # parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
