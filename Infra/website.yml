@@ -227,7 +227,7 @@ Resources:
           ContainerPort: 3000
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
-        AwsvpcCinfiguration:
+        AwsvpcConfiguration:
           AssignPublicIp: DISABLED
           SecurityGroups:
             - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
