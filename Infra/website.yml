@@ -89,7 +89,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       IpAddressType: ipv4
-      Name: !Sub "${AppName}-nlb-${Stage}"
+      Name: !Sub "${ServiceName}-alb-${Stage}"
       Scheme: internal
       Type: application
       SecurityGroups: 
