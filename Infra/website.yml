@@ -11,7 +11,7 @@ Parameters:
     Default: "v1"
   ServiceName:
     Type: String
-    Default: devs-withmission-web
+    Default: devs-withmission
   AppName:
     Type: String
     Description: Name of app requiring ELB exposure
@@ -236,4 +236,4 @@ Resources:
             - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
       PlatformVersion: LATEST
       ServiceName: !Sub "${ServiceName}_${Stage}"
-      TaskDefinition: !Ref TaskDefinition   
+      TaskDefinition: !Ref TaskDefinition  
