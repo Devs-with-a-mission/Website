@@ -58,7 +58,7 @@ Mappings:
       "hml": "2" #2
   ListenerPortMap:
     us-east-1: 
-      "hml": "3000"
+      "hml": "8080"
 
   
 Resources:
