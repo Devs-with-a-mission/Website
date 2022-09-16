@@ -70,11 +70,12 @@ Resources:
     Properties:
       HealthCheckEnabled: true
       HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: HTTPS
+      HealthCheckProtocol: HTTP
       HealthyThresholdCount: 2
+      HealthCheckPath: /health
       Name: !Sub "${ServiceName}-tg-${Stage}"
       Port: 3000
-      Protocol: HTTPS
+      Protocol: HTTP
       # ProtocolVersion: "String"
       # Tags:
       #   Tags
