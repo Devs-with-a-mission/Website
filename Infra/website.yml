@@ -68,7 +68,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      # HealthCheckEnabled: true
+      HealthCheckEnabled: false
       # HealthCheckIntervalSeconds: 10
       # HealthCheckProtocol: HTTP
       # HealthyThresholdCount: 2
@@ -144,7 +144,7 @@ Resources:
         - Effect: Allow 
           Action:
           - ecs:*
-          - logs:CreateLoggroup
+          - logs:CreateLogGroup
           - logs:CreateLogStream
           - logs:PutLogsEvents
           - ec2:CreateNetworkInterface
@@ -152,7 +152,7 @@ Resources:
           - ec2:DeleteNetworkInterface
           - ecr:GetAutorizationToken
           - ecr:BatchChecklayerAvailability
-          - ecr:GetDownloadUrlForlayer
+          - ecr:GetDownloadUrlForLayer
           - ecr:BatchGetImage
           Resource:
           - '*'      
