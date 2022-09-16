@@ -204,8 +204,8 @@ Resources:
             awslogs-region: !Ref "AWS::Region"
             awslogs-stream-prefix: ecs 
 
-      Cpu: "256"
-      Memory: "512"      
+      Cpu: "512"
+      Memory: "2048"      
       Family: !Ref AppName 
       NetworkMode: awsvpc 
       RequiresCompatibilities:
