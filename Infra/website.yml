@@ -76,7 +76,6 @@ Resources:
       Name: !Sub "${ServiceName}-tg-${Stage}"
       Port: 3000
       Protocol: HTTP
-      ProtocolVersion: "String"
       TargetType: ip
       UnhealthyThresholdCount: 2
       VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
