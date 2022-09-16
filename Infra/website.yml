@@ -68,11 +68,11 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckEnabled: true
-      HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: HTTP
-      HealthyThresholdCount: 2
-      HealthCheckPath: /health
+      # HealthCheckEnabled: true
+      # HealthCheckIntervalSeconds: 10
+      # HealthCheckProtocol: HTTP
+      # HealthyThresholdCount: 2
+      # HealthCheckPath: /health
       Name: !Sub "${ServiceName}-tg-${Stage}"
       Port: 3000
       Protocol: HTTP
@@ -83,7 +83,7 @@ Resources:
       #   TargetGroupAttributes
       TargetType: ip
       
-      UnhealthyThresholdCount: 2
+      # UnhealthyThresholdCount: 2
       VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
 
 #LoadBalancer
@@ -183,8 +183,8 @@ Resources:
       ContainerDefinitions:
       - Image: !FindInMap [ImageMap, !Ref "AWS::Region", !Ref Stage]
         Cpu: 0 
-        Memory: 1024
-        MemoryReservation: 512
+        Memory: 512
+        MemoryReservation: 384
         Name: !Sub "${ServiceName}_container"
         PortMappings:
         - HostPort: 3000 
@@ -204,8 +204,8 @@ Resources:
             awslogs-region: !Ref "AWS::Region"
             awslogs-stream-prefix: ecs 
 
-      Cpu: "512"
-      Memory: "2048"      
+      Cpu: "256"
+      Memory: "512"      
       Family: !Ref AppName 
       NetworkMode: awsvpc 
       RequiresCompatibilities:
