@@ -70,11 +70,11 @@ Resources:
     Properties:
       HealthCheckEnabled: true
       HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: HTTP
+      HealthCheckProtocol: HTTPS
       HealthyThresholdCount: 2
       Name: !Sub "${ServiceName}-tg-${Stage}"
       Port: 3000
-      Protocol: HTTP 
+      Protocol: HTTPS
       # ProtocolVersion: "String"
       # Tags:
       #   Tags
@@ -229,7 +229,7 @@ Resources:
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
+          AssignPublicIp: true
           SecurityGroups:
             - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
           Subnets:
