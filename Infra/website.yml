@@ -237,3 +237,4 @@ Resources:
       PlatformVersion: LATEST
       ServiceName: !Sub "${ServiceName}_${Stage}"
       TaskDefinition: !Ref TaskDefinition  
+      
