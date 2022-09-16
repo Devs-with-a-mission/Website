@@ -224,13 +224,13 @@ Resources:
       DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
       LaunchType: FARGATE
       LoadBalancers:
-      
+
         - ContainerName: !Sub "${ServiceName}_container"
           ContainerPort: 3000
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: true
+          AssignPublicIp: DISABLED
           SecurityGroups:
             - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
           Subnets:
