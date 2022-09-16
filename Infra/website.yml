@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Creating ECS service
 
+
 Globals:
   Function:
     Timeout: 15
@@ -237,4 +238,4 @@ Resources:
       PlatformVersion: LATEST
       ServiceName: !Sub "${ServiceName}_${Stage}"
       TaskDefinition: !Ref TaskDefinition  
-      
+
