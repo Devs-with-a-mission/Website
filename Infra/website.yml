@@ -65,20 +65,20 @@ Resources:
 
 #TargetGroup  
 
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckEnabled: true
-      HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: HTTP
-      HealthyThresholdCount: 2
-      HealthCheckPath: /health
-      Name: !Sub "${ServiceName}-tg-${Stage}"
-      Port: 3000
-      Protocol: HTTP
-      TargetType: ip
-      UnhealthyThresholdCount: 2
-      VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
+  # TargetGroup:
+  #   Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  #   Properties:
+  #     HealthCheckEnabled: false
+  #     HealthCheckIntervalSeconds: 10
+  #     HealthCheckProtocol: HTTP
+  #     HealthyThresholdCount: 2
+  #     HealthCheckPath: /health
+  #     Name: !Sub "${ServiceName}-tg-${Stage}"
+  #     Port: 3000
+  #     Protocol: HTTP
+  #     TargetType: ip
+  #     UnhealthyThresholdCount: 2
+  #     VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
 
 #LoadBalancer
 
@@ -177,7 +177,7 @@ Resources:
     Properties:
       ContainerDefinitions:
       - Image: !FindInMap [ImageMap, !Ref "AWS::Region", !Ref Stage]
-        Cpu: 0 
+        Cpu: 256
         Memory: 512
         MemoryReservation: 384
         Name: !Sub "${ServiceName}_container"
