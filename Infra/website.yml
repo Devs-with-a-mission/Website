@@ -49,7 +49,7 @@ Mappings:
       "dev": "us-east-1a"
   AvailabilityZone2:
    us-east-1: 
-      "dev": "us-east-1a"    
+      "dev": "us-east-1b"    
   ApplicationEnvironmentMap:
     us-east-1: 
       "dev": "Staging"
