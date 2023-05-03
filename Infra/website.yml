@@ -40,7 +40,7 @@ Mappings:
       "dev": "sg-07e62705ddd5ccfc0"
   PrivateSubnetMapAZ:
     us-east-1: 
-      "dev": "subnet-0ac5393da2b564512"            
+      "dev": "subnet-0f4045ff1c6386b9d"            
   PublicSubnetMapAZ:
     us-east-1: 
       "dev": "subnet-0e1d5ae662e2f9671"
@@ -96,7 +96,7 @@ Resources:
             !Ref Stage,
              ]
       Subnets:
-        #- !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+        - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
         - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
       Tags:
         - Key: "Ambiente"
