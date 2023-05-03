@@ -28,28 +28,25 @@ Parameters:
 Mappings:
   ImageMap:
     us-east-1:
-      "hml": "907581358265.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
+      "hml": "281852035048.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
   VpcMap:
     us-east-1:
-      "hml": "vpc-09ca8a1b5a47af068"
+      "hml": "vpc-03bbb769430409776"
   NetworkLoadBalancerSecurityGroupMap:
     us-east-1: 
-      "hml": "sg-07defd964bcf89792" 
+      "hml": "sg-07e62705ddd5ccfc0" 
   FargateHtppSecurityGroupMap:
     us-east-1: 
-      "hml": "sg-07defd964bcf89792"
+      "hml": "sg-07e62705ddd5ccfc0"
   PrivateSubnetMapAZ:
     us-east-1: 
-      "hml": "subnet-0b54faba0e998a6e8"            
+      "hml": "subnet-0ac5393da2b564512"            
   PublicSubnetMapAZ:
     us-east-1: 
-      "hml": "subnet-0500c24e6d483fc1e"
+      "hml": "subnet-0e1d5ae662e2f9671"
   AvailabilityZone1:
     us-east-1: 
       "hml": "us-east-1a"  
-  AvailabilityZone2:
-    us-east-1: 
-      "hml": "us-east-1b"
   ApplicationEnvironmentMap:
     us-east-1: 
       "hml": "Staging"
@@ -182,7 +179,7 @@ Resources:
         MemoryReservation: 384
         Name: !Sub "${ServiceName}_container"
         PortMappings:
-        - HostPort: 3000 
+        - HostPort: 3000
           Protocol: tcp
           ContainerPort: 3000
         Essential: true 
