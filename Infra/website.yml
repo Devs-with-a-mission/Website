@@ -65,20 +65,20 @@ Resources:
 
 #TargetGroup  
 
-  # TargetGroup:
-  #   Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  #   Properties:
-  #     HealthCheckEnabled: false
-  #     HealthCheckIntervalSeconds: 10
-  #     HealthCheckProtocol: HTTP
-  #     HealthyThresholdCount: 2
-  #     HealthCheckPath: /health
-  #     Name: !Sub "${ServiceName}-tg-${Stage}"
-  #     Port: 3000
-  #     Protocol: HTTP
-  #     TargetType: ip
-  #     UnhealthyThresholdCount: 2
-  #     VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: false
+      HealthCheckIntervalSeconds: 10
+      HealthCheckProtocol: HTTP
+      HealthyThresholdCount: 2
+      HealthCheckPath: /health
+      Name: !Sub "${ServiceName}-tg-${Stage}"
+      Port: 3000
+      Protocol: HTTP
+      TargetType: ip
+      UnhealthyThresholdCount: 2
+      VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
 
 #LoadBalancer
 
@@ -131,26 +131,28 @@ Resources:
 
 #Policy
   Policy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+    PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
         - Effect: Allow 
           Action:
-          - ecs:*
-          - logs:CreateLogGroup
-          - logs:CreateLogStream
-          - logs:PutLogsEvents
-          - ec2:CreateNetworkInterface
-          - ec2:DescribeNetworkInterface
-          - ec2:DeleteNetworkInterface
-          - ecr:GetAutorizationToken
-          - ecr:BatchChecklayerAvailability
-          - ecr:GetDownloadUrlForLayer
-          - ecr:BatchGetImage
+            - ecs:*
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
+            - ecr:GetAuthorizationToken
+            - ecr:BatchCheckLayerAvailability
+            - ecr:GetDownloadUrlForLayer
+            - ecr:BatchGetImage
           Resource:
-          - '*'      
+            - '*'
+            - arn:aws:ecr:*:*:*
+    
   #Role
   Role:
     Type: AWS::IAM::Role
