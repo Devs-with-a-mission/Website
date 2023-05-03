@@ -96,7 +96,7 @@ Resources:
             !Ref Stage,
              ]
       Subnets:
-        - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+        #- !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
         - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
       Tags:
         - Key: "Ambiente"
