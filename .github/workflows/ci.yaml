@@ -42,7 +42,7 @@ jobs:
     - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
-        name: Website-ci 
+        name: Website-ci-dev 
         template: Infra/website.yml
         capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
           
