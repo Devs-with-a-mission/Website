@@ -19,43 +19,46 @@ Parameters:
     Default: devs-with-mission-web
   Stage:
     Type: String
-    Default: hml
+    Default: dev
     AllowedValues:
       - prd 
-      - hml
+      - dev
     Description: definicao ambiente
 
 Mappings:
   ImageMap:
     us-east-1:
-      "hml": "281852035048.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
+      "dev": "281852035048.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
   VpcMap:
     us-east-1:
-      "hml": "vpc-03bbb769430409776"
+      "dev": "vpc-03bbb769430409776"
   NetworkLoadBalancerSecurityGroupMap:
     us-east-1: 
-      "hml": "sg-07e62705ddd5ccfc0" 
+      "dev": "sg-07e62705ddd5ccfc0" 
   FargateHtppSecurityGroupMap:
     us-east-1: 
-      "hml": "sg-07e62705ddd5ccfc0"
+      "dev": "sg-07e62705ddd5ccfc0"
   PrivateSubnetMapAZ:
     us-east-1: 
-      "hml": "subnet-0ac5393da2b564512"            
+      "dev": "subnet-0ac5393da2b564512"            
   PublicSubnetMapAZ:
     us-east-1: 
-      "hml": "subnet-0e1d5ae662e2f9671"
+      "dev": "subnet-0e1d5ae662e2f9671"
   AvailabilityZone1:
     us-east-1: 
-      "hml": "us-east-1a"  
+      "dev": "us-east-1a"
+  AvailabilityZone2:
+   us-east-1: 
+      "dev": "us-east-1a"    
   ApplicationEnvironmentMap:
     us-east-1: 
-      "hml": "Staging"
+      "dev": "Staging"
   FargateNodes:    
     us-east-1: 
-      "hml": "2" #2
+      "dev": "2" #2
   ListenerPortMap:
     us-east-1: 
-      "hml": "8080"
+      "dev": "8080"
 
   
 Resources:
