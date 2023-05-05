@@ -139,17 +139,9 @@ Resources:
         - Effect: Allow 
         
           Action:
+          - '*'
           - ecs:*
-          - logs:CreateLogGroup
-          - logs:CreateLogStream
-          - logs:PutLogsEvents
-          - ec2:CreateNetworkInterface
-          - ec2:DescribeNetworkInterface
-          - ec2:DeleteNetworkInterface
-          - ecr:GetAutorizationToken
-          - ecr:BatchChecklayerAvailability
-          - ecr:GetDownloadUrlForLayer
-          - ecr:BatchGetImage
+          - ecr:*
           Resource:
           - '*' 
           - 'arn:aws:ecr:*:*:*'
