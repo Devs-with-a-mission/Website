@@ -43,7 +43,7 @@ Mappings:
       "dev": "subnet-0fde4cee0e61a87ac"            
   PublicSubnetMapAZ:
     us-east-1: 
-      "dev": "subnet-044fb594058231c77"
+      "dev": "subnet-0bf75180fec0dd375"
   AvailabilityZone1:
     us-east-1: 
       "dev": "us-east-1a"
