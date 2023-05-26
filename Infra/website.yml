@@ -34,10 +34,10 @@ Mappings:
       "dev": "vpc-098329262fffdbd02"
   NetworkLoadBalancerSecurityGroupMap:
     us-east-1: 
-      "dev": "sg-077c36baf87a07896" 
+      "dev": "sg-02ca39497c7912b56" 
   FargateHtppSecurityGroupMap:
     us-east-1: 
-      "dev": "sg-077c36baf87a07896"
+      "dev": "sg-02ca39497c7912b56"
   PrivateSubnetMapAZ:
     us-east-1: 
       "dev": "subnet-0fde4cee0e61a87ac"            
