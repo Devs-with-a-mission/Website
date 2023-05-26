@@ -134,17 +134,16 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow 
-        
-          Action:
-          - '*'
-          - ecs:*
-          - ecr:*
-          Resource:
-          - '*' 
-          - 'arn:aws:ecr:*:*:*'
+       Version: 2012-10-17
+       Statement:
+         - Sid: VisualEditor0
+           Effect: Allow
+           Action:
+             - 's3:*'
+             - 'ecs:*'
+             - 'ecr:*'
+           Resource: '*'
+    
   #Role
   Role:
     Type: AWS::IAM::Role
@@ -171,9 +170,9 @@ Resources:
     Properties:
       ContainerDefinitions:
       - Image: !FindInMap [ImageMap, !Ref "AWS::Region", !Ref Stage]
-        Cpu: 256
-        Memory: 512
-        MemoryReservation: 384
+        Cpu: 512
+        Memory: 1024
+        MemoryReservation: 512
         Name: !Sub "${ServiceName}_container"
         PortMappings:
         - HostPort: 3000
@@ -193,8 +192,8 @@ Resources:
             awslogs-region: !Ref "AWS::Region"
             awslogs-stream-prefix: ecs 
 
-      Cpu: "256"
-      Memory: "512"      
+      Cpu: "512"
+      Memory: "1024"      
       Family: !Ref AppName 
       NetworkMode: awsvpc 
       RequiresCompatibilities:
