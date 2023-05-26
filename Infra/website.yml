@@ -27,37 +27,37 @@ Parameters:
 
 Mappings:
   ImageMap:
-    us-east-1:
-      "dev": "281852035048.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
+    us-east-2:
+      "dev": "024177866594.dkr.ecr.us-east-2.amazonaws.com/devs-with-mission:latest"
   VpcMap:
-    us-east-1:
-      "dev": "vpc-03bbb769430409776"
+    us-east-2:
+      "dev": "vpc-0ae3db9a124e91276"
   NetworkLoadBalancerSecurityGroupMap:
-    us-east-1: 
-      "dev": "sg-07e62705ddd5ccfc0" 
+    us-east-2: 
+      "dev": "sg-02dafacf67fca8158" 
   FargateHtppSecurityGroupMap:
-    us-east-1: 
-      "dev": "sg-07e62705ddd5ccfc0"
+    us-east-2: 
+      "dev": "sg-02dafacf67fca8158"
   PrivateSubnetMapAZ:
-    us-east-1: 
-      "dev": "subnet-0f4045ff1c6386b9d"            
+    us-east-2: 
+      "dev": "subnet-02d6e3bb3c5d0ecc6"            
   PublicSubnetMapAZ:
-    us-east-1: 
-      "dev": "subnet-0e1d5ae662e2f9671"
+    us-east-2: 
+      "dev": "subnet-0d5badfe63dd27cb0"
   AvailabilityZone1:
-    us-east-1: 
-      "dev": "us-east-1a"
+    us-east-2: 
+      "dev": "us-east-2a"
   AvailabilityZone2:
-   us-east-1: 
-      "dev": "us-east-1b"    
+   us-east-2: 
+      "dev": "us-east-2b"    
   ApplicationEnvironmentMap:
-    us-east-1: 
+    us-east-2: 
       "dev": "Staging"
   FargateNodes:    
-    us-east-1: 
+    us-east-2: 
       "dev": "2" #2
   ListenerPortMap:
-    us-east-1: 
+    us-east-2: 
       "dev": "8080"
 
   
