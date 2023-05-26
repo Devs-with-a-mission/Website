@@ -31,7 +31,6 @@ Mappings:
       "dev": "024177866594.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
   VpcMap:
     us-east-1:
-    
       "dev": "vpc-098329262fffdbd02"
   NetworkLoadBalancerSecurityGroupMap:
     us-east-1: 
