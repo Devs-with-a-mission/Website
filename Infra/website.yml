@@ -31,19 +31,19 @@ Mappings:
       "dev": "024177866594.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
   VpcMap:
     us-east-1:
-      "dev": "vpc-098329262fffdbd02"
+      "dev": "vpc-0eb3f4f2e5bc27896"
   NetworkLoadBalancerSecurityGroupMap:
     us-east-1: 
-      "dev": "sg-02ca39497c7912b56" 
+      "dev": "sg-0ad5aff4d1389609e" 
   FargateHtppSecurityGroupMap:
     us-east-1: 
-      "dev": "sg-02ca39497c7912b56"
+      "dev": "sg-0ad5aff4d1389609e"
   PrivateSubnetMapAZ:
     us-east-1: 
-      "dev": "subnet-0fde4cee0e61a87ac"            
+      "dev": "subnet-0e14f7e0458f8fff4"            
   PublicSubnetMapAZ:
     us-east-1: 
-      "dev": "subnet-0bf75180fec0dd375"
+      "dev": "subnet-01bcca6490e257468"
   AvailabilityZone1:
     us-east-1: 
       "dev": "us-east-1a"
@@ -52,7 +52,7 @@ Mappings:
       "dev": "us-east-1b"    
   ApplicationEnvironmentMap:
     us-east-1: 
-      "dev": "Staging"
+      "dev": "dev"
   FargateNodes:    
     us-east-1: 
       "dev": "2" #2
@@ -65,20 +65,20 @@ Resources:
 
 #TargetGroup  
 
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckEnabled: TRUE
-      HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: HTTP
-      HealthyThresholdCount: 2
-      HealthCheckPath: /health
-      Name: !Sub "${ServiceName}-tg-${Stage}"
-      Port: 3000
-      Protocol: HTTP
-      TargetType: ip
-      UnhealthyThresholdCount: 2
-      VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
+  # TargetGroup:
+  #   Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  #   Properties:
+  #     HealthCheckEnabled: TRUE
+  #     HealthCheckIntervalSeconds: 10
+  #     HealthCheckProtocol: HTTP
+  #     HealthyThresholdCount: 2
+  #     HealthCheckPath: /health
+  #     Name: !Sub "${ServiceName}-tg-${Stage}"
+  #     Port: 3000
+  #     Protocol: HTTP
+  #     TargetType: ip
+  #     UnhealthyThresholdCount: 2
+  #     VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
 
 #LoadBalancer
 
