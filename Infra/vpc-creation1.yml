@@ -82,6 +82,8 @@ Resources:
       SubnetId: !Ref MySubnet1B
       RouteTableId: !Ref MyPublicRouteTable
 
+
+
 Outputs:
   VpcId:
     Value: !Ref MyVPC
