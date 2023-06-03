@@ -97,6 +97,13 @@ Resources:
       SubnetId: !Ref MySubnet1B
       RouteTableId: !Ref MyPublicRouteTable
 
+  # Criação do grupo de segurança
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Devs With Mission Security Group
+      VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
+      
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -231,13 +238,14 @@ Resources:
       AwsvpcConfiguration:
         AssignPublicIp: ENABLED
         SecurityGroups:
-          - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
+          - !Ref FargateHtppSecurityGroup
         Subnets:
           - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
           - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
     PlatformVersion: LATEST
     ServiceName: !Sub "${ServiceName}_${Stage}"
     TaskDefinition: !Ref TaskDefinition
+
 
 
 Outputs:
