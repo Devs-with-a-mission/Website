@@ -65,13 +65,13 @@ Resources:
   MyNatGateway1A:
     Type: 'AWS::EC2::NatGateway'
     Properties:
-      AllocationId: !GetAtt MyPublicSubnet1A.AllocationId
+      AllocationId: !GetAtt MyEIP1A.AllocationId
       SubnetId: !Ref MyPublicSubnet1A
 
   MyNatGateway1B:
     Type: 'AWS::EC2::NatGateway'
     Properties:
-      AllocationId: !GetAtt MyPublicSubnet1B.AllocationId
+      AllocationId: !GetAtt MyEIP1B.AllocationId
       SubnetId: !Ref MyPublicSubnet1B
 
   MyPrivateRoute1A:
@@ -88,26 +88,12 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1B
 
-  MyPublicSubnet1ARouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+  MyEIP1A:
+    Type: 'AWS::EC2::EIP'
     Properties:
-      SubnetId: !Ref MyPublicSubnet1A
-      RouteTableId: !Ref MyPublicRouteTable
+      Domain: 'vpc'
 
-  MyPublicSubnet1BRouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+  MyEIP1B:
+    Type: 'AWS::EC2::EIP'
     Properties:
-      SubnetId: !Ref MyPublicSubnet1B
-      RouteTableId: !Ref MyPublicRouteTable
-
-  MyPrivateSubnet1ARouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref MyPrivateSubnet1A
-      RouteTableId: !Ref MyPrivateRouteTable
-
-  MyPrivateSubnet1BRouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref MyPrivateSubnet1B
-      RouteTableId: !Ref MyPrivateRouteTable
+      Domain: 'vpc'
