@@ -58,12 +58,12 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref MyInternetGateway
 
-  MyPrivateRouteTable-A:
+  MyPrivateRouteTableA:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC
 
-  MyPrivateRouteTable-B:
+  MyPrivateRouteTableB:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC    
@@ -71,14 +71,14 @@ Resources:
   MyPrivateRoute1A:
     Type: 'AWS::EC2::Route'
     Properties:
-      RouteTableId: !Ref MyPrivateRouteTable-A
+      RouteTableId: !Ref MyPrivateRouteTableA
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1A
 
   MyPrivateRoute1B:
     Type: 'AWS::EC2::Route'
     Properties:
-      RouteTableId: !Ref MyPrivateRouteTable-B
+      RouteTableId: !Ref MyPrivateRouteTableB
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1B
 
