@@ -52,7 +52,7 @@ Resources:
 
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
-    Properties:
+    Properties: {}
   MyGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
