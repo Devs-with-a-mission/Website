@@ -214,30 +214,30 @@ Resources:
       TaskRoleArn: !Ref Role   
 
   Service:
-    Type: AWS::ECS::Service
-    DependsOn: LoadBalancer
-    Properties:
-      Cluster: !Ref Cluster
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
-      DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
-      LaunchType: FARGATE
-      LoadBalancers:
-        - ContainerName: !Sub "${ServiceName}_container"
-          ContainerPort: 3000
-          TargetGroupArn: !Ref TargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-            - !Ref LoadBalancerSecurityGroup
-          Subnets:
-            - !Ref MySubnet1A
-            - !Ref MySubnet1B
-      PlatformVersion: LATEST
-      ServiceName: !Sub "${ServiceName}_${Stage}"
-      TaskDefinition: !Ref TaskDefinition
+  Type: AWS::ECS::Service
+  DependsOn: LoadBalancer
+  Properties:
+    Cluster: !Ref Cluster
+    DeploymentConfiguration:
+      MaximumPercent: 200
+      MinimumHealthyPercent: 100
+    DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
+    LaunchType: FARGATE
+    LoadBalancers:
+      - ContainerName: !Sub "${ServiceName}_container"
+        ContainerPort: 3000
+        TargetGroupArn: !Ref TargetGroup
+    NetworkConfiguration:
+      AwsvpcConfiguration:
+        AssignPublicIp: ENABLED
+        SecurityGroups:
+          - !FindInMap [FargateHtppSecurityGroupMap, !Ref "AWS::Region", !Ref Stage]
+        Subnets:
+          - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+          - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
+    PlatformVersion: LATEST
+    ServiceName: !Sub "${ServiceName}_${Stage}"
+    TaskDefinition: !Ref TaskDefinition
 
 
 Outputs:
