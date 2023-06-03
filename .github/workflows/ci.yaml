@@ -1,160 +1,56 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Resources:
-  MyVPC:
-    Type: 'AWS::EC2::VPC'
-    Properties:
-      CidrBlock: '10.0.0.0/16'
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-VPC'
+name: Deploy
 
-  MyPublicSubnet1A:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1a
-      CidrBlock: '10.0.0.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicSubnet1A'
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ develop, feature ]
+jobs:
 
-  MyPublicSubnet1B:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1b
-      CidrBlock: '10.0.1.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicSubnet1B'
 
-  MyPrivateSubnet1A:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1a
-      CidrBlock: '10.0.2.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateSubnet1A'
+  build:
+    
+    name: Deploy website
+    runs-on: ubuntu-latest
 
-  MyPrivateSubnet1B:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1b
-      CidrBlock: '10.0.3.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateSubnet1B'
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
 
-  MyInternetGateway:
-    Type: 'AWS::EC2::InternetGateway'
-    Properties:
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-InternetGateway'
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
-  MyGatewayAttachment:
-    Type: 'AWS::EC2::VPCGatewayAttachment'
-    Properties:
-      VpcId: !Ref MyVPC
-      InternetGatewayId: !Ref MyInternetGateway
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-GatewayAttachment'
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-  MyPublicRouteTable:
-    Type: 'AWS::EC2::RouteTable'
-    Properties:
-      VpcId: !Ref MyVPC
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicRouteTable'
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: devs-with-mission
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  MyPublicRoute:
-    Type: 'AWS::EC2::Route'
-    DependsOn: MyGatewayAttachment
-    Properties:
-      RouteTableId: !Ref MyPublicRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref MyInternetGateway
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicRoute'
 
-  MyPrivateRouteTable:
-    Type: 'AWS::EC2::RouteTable'
-    Properties:
-      VpcId: !Ref MyVPC
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateRouteTable'
+    - name: Creating VPC
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: vpc-creation
+        template: Infra/vpc-creation.yml
+        capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
 
-  MyPrivateRoute1A:
-    Type: 'AWS::EC2::Route'
-    Properties:
-      RouteTableId: !Ref MyPrivateRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref MyNatGateway1A
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateRoute1A'
-
-  MyPrivateRoute1B:
-    Type: 'AWS::EC2::Route'
-    Properties:
-      RouteTableId: !Ref MyPrivateRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref MyNatGateway1B
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateRoute1B'
-
-  MyNatGateway1A:
-    Type: 'AWS::EC2::NatGateway'
-    Properties:
-      AllocationId: !GetAtt MyEIP1A.AllocationId
-      SubnetId: !Ref MyPublicSubnet1A
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-NatGateway1A'
-
-  MyNatGateway1B:
-    Type: 'AWS::EC2::NatGateway'
-    Properties:
-      AllocationId: !GetAtt MyEIP1B.AllocationId
-      SubnetId: !Ref MyPublicSubnet1B
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-NatGateway1B'
-
-  MyPrivateSubnet1AAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref MyPrivateSubnet1A
-      RouteTableId: !Ref MyPrivateRouteTable
-
-  MyPrivateSubnet1BAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref MyPrivateSubnet1B
-      RouteTableId: !Ref MyPrivateRouteTable
-
-  MyEIP1A:
-    Type: 'AWS::EC2::EIP'
-    Properties:
-      Domain: 'vpc'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-ElasticIP1A'
-
-  MyEIP1B:
-    Type: 'AWS::EC2::EIP'
-    Properties:
-      Domain: 'vpc'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-ElasticIP1B'
+    - name: Deploy to AWS CloudFormation
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: Website-ci-dev-1
+        template: Infra/website.yml
+        capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
+          
+       # parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
