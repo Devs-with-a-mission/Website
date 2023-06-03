@@ -6,9 +6,6 @@ Resources:
       CidrBlock: '10.0.0.0/16'
       EnableDnsSupport: true
       EnableDnsHostnames: true
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-VPC'
 
   MyPublicSubnet1A:
     Type: 'AWS::EC2::Subnet'
@@ -16,9 +13,6 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1a
       CidrBlock: '10.0.0.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicSubnet1A'
 
   MyPublicSubnet1B:
     Type: 'AWS::EC2::Subnet'
@@ -26,9 +20,6 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1b
       CidrBlock: '10.0.1.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicSubnet1B'
 
   MyPrivateSubnet1A:
     Type: 'AWS::EC2::Subnet'
@@ -36,9 +27,6 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1a
       CidrBlock: '10.0.2.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateSubnet1A'
 
   MyPrivateSubnet1B:
     Type: 'AWS::EC2::Subnet'
@@ -46,13 +34,11 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1b
       CidrBlock: '10.0.3.0/24'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateSubnet1B'
 
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     Properties: {}
+
   MyGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
@@ -63,9 +49,6 @@ Resources:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicRouteTable'
 
   MyPublicRoute:
     Type: 'AWS::EC2::Route'
@@ -79,9 +62,6 @@ Resources:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateRouteTable'
 
   MyPrivateRoute1A:
     Type: 'AWS::EC2::Route'
@@ -109,32 +89,12 @@ Resources:
       AllocationId: !GetAtt MyEIP1B.AllocationId
       SubnetId: !Ref MyPublicSubnet1B
 
-  MyPrivateSubnet1AAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref MyPrivateSubnet1A
-      RouteTableId: !Ref MyPrivateRouteTable
-
-  MyPrivateSubnet1BAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref MyPrivateSubnet1B
-      RouteTableId: !Ref MyPrivateRouteTable
-
   MyEIP1A:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: 'vpc'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-ElasticIP1A'
 
   MyEIP1B:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: 'vpc'
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-ElasticIP1B'
-
-
