@@ -1,105 +1,251 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  Version:
+    Type: String
+    Default: "v1"
+  ServiceName:
+    Type: String
+    Default: devs-withmission
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - prd 
+      - dev
+    Description: Definição do ambiente
+
 Resources:
   MyVPC:
-    Type: 'AWS::EC2::VPC'
+    Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: '10.0.0.0/16'
+      CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: devs-with-mission-vpc
+          PropagateAtLaunch: true
 
-  MyPublicSubnet1A:
-    Type: 'AWS::EC2::Subnet'
+  MySubnet1A:
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
+      CidrBlock: 10.0.0.0/24
       AvailabilityZone: us-east-1a
-      CidrBlock: '10.0.0.0/24'
+      Tags:
+        - Key: Name
+          Value: devs-with-mission-subnet-1a
+          PropagateAtLaunch: true
 
-  MyPublicSubnet1B:
-    Type: 'AWS::EC2::Subnet'
+  MySubnet1B:
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
+      CidrBlock: 10.0.1.0/24
       AvailabilityZone: us-east-1b
-      CidrBlock: '10.0.1.0/24'
-
-  MyPrivateSubnet1A:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1a
-      CidrBlock: '10.0.2.0/24'
-
-  MyPrivateSubnet1B:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1b
-      CidrBlock: '10.0.3.0/24'
+      Tags:
+        - Key: Name
+          Value: devs-with-mission-subnet-1b
+          PropagateAtLaunch: true
 
   MyInternetGateway:
-    Type: 'AWS::EC2::InternetGateway'
-    Properties: {}
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: devs-with-mission-igw
 
-  MyGatewayAttachment:
-    Type: 'AWS::EC2::VPCGatewayAttachment'
+  MyVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
 
   MyPublicRouteTable:
-    Type: 'AWS::EC2::RouteTable'
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: devs-with-mission-public-rt
+
+  MyPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: devs-with-mission-private-rt
 
   MyPublicRoute:
-    Type: 'AWS::EC2::Route'
-    DependsOn: MyGatewayAttachment
+    Type: AWS::EC2::Route
+    DependsOn: MyVPCGatewayAttachment
     Properties:
       RouteTableId: !Ref MyPublicRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
+      DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref MyInternetGateway
 
-  MyPrivateRouteTableA:
-    Type: 'AWS::EC2::RouteTable'
+  MyPublicSubnet1ARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
+      SubnetId: !Ref MySubnet1A
+      RouteTableId: !Ref MyPublicRouteTable
+
+  MyPublicSubnet1BRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MySubnet1B
+      RouteTableId: !Ref MyPublicRouteTable
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${ServiceName}-tg-${Stage}"
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
       VpcId: !Ref MyVPC
 
-  MyPrivateRouteTableB:
-    Type: 'AWS::EC2::RouteTable'
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      VpcId: !Ref MyVPC    
+      Name: !Sub "${ServiceName}-lb-${Stage}"
+      Subnets:
+        - !Ref MySubnet1A
+        - !Ref MySubnet1B
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub "${ServiceName}-lb-${Stage}"
+      Type: application
 
-  MyPrivateRoute1A:
-    Type: 'AWS::EC2::Route'
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      RouteTableId: !Ref MyPrivateRouteTableA
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref MyNatGateway1A
+      GroupDescription: Enable HTTP access via port 80
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+    Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub "${AppName}-${Stage}"
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled 
+      Tags:
+        - Key: "Ambiente"
+          Value: !Ref Stage 
+        - Key: "Name"
+          Value: !Ref AppName 
 
-  MyPrivateRoute1B:
-    Type: 'AWS::EC2::Route'
+  Policy:
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      RouteTableId: !Ref MyPrivateRouteTableB
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref MyNatGateway1B
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: VisualEditor0
+            Effect: Allow
+            Action:
+              - 's3:*'
+              - 'ecs:*'
+              - 'ecr:*'
+              - 'logs:*'
+            Resource: '*'
+  
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Ref Policy
 
-  MyNatGateway1A:
-    Type: 'AWS::EC2::NatGateway'
-    Properties:
-      AllocationId: !GetAtt MyEIP1A.AllocationId
-      SubnetId: !Ref MyPublicSubnet1A
+  EcsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: !Sub "/ecs/${ServiceName}-${Stage}"  
+      RetentionInDays: 30 
 
-  MyNatGateway1B:
-    Type: 'AWS::EC2::NatGateway'
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
     Properties:
-      AllocationId: !GetAtt MyEIP1B.AllocationId
-      SubnetId: !Ref MyPublicSubnet1B
+      ContainerDefinitions:
+        - Image: !FindInMap [ImageMap, !Ref "AWS::Region", !Ref Stage]
+          Cpu: 512
+          Memory: 1024
+          MemoryReservation: 512
+          Name: !Sub "${ServiceName}_container"
+          PortMappings:
+            - HostPort: 3000
+              Protocol: tcp
+              ContainerPort: 3000
+          Essential: true 
+          Environment:
+            - Name: ENV 
+              Value: dev  
+            - Name: PORT 
+              Value: 3000
+          LogConfiguration:
+            LogDriver: awslogs 
+            Options:
+              awslogs-group: !Ref EcsLogGroup 
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-stream-prefix: ecs 
 
-  MyEIP1A:
-    Type: 'AWS::EC2::EIP'
-    Properties:
-      Domain: 'vpc'
+      Cpu: "512"
+      Memory: "1024"      
+      Family: !Ref AppName 
+      NetworkMode: awsvpc 
+      RequiresCompatibilities:
+        - FARGATE 
+      ExecutionRoleArn: !Ref Role
+      TaskRoleArn: !Ref Role   
 
-  MyEIP1B:
-    Type: 'AWS::EC2::EIP'
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: LoadBalancer
     Properties:
-      Domain: 'vpc'
+      Cluster: !Ref Cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: !Sub "${ServiceName}_container"
+          ContainerPort: 3000
+          TargetGroupArn: !Ref TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !Ref LoadBalancerSecurityGroup
+          Subnets:
+            - !Ref MySubnet1A
+            - !Ref MySubnet1B
+      PlatformVersion: LATEST
+      ServiceName: !Sub "${ServiceName}_${Stage}"
+      TaskDefinition: !Ref TaskDefinition
+
+
+Outputs:
+  VpcId:
+    Value: !Ref MyVPC
+  Subnet1A:
+    Value: !Ref MySubnet1A
+  Subnet1B:
+    Value: !Ref MySubnet1B
+  LoadBalancerDNS:
+    Value: !GetAtt LoadBalancer.DNSName
