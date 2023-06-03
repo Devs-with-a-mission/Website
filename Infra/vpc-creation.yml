@@ -6,12 +6,9 @@ Resources:
       CidrBlock: '10.0.0.0/16'
       EnableDnsSupport: true
       EnableDnsHostnames: true
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'b7e634a4-8fd4-42d1-bad6-8c0a2b8a41de'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-VPC'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-VPC'
 
   MyPublicSubnet1A:
     Type: 'AWS::EC2::Subnet'
@@ -19,12 +16,9 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1a
       CidrBlock: '10.0.0.0/24'
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'd4a5f24f-4f4b-4af5-a7d7-8d11d4f3ed53'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-PublicSubnet1A'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicSubnet1A'
 
   MyPublicSubnet1B:
     Type: 'AWS::EC2::Subnet'
@@ -32,12 +26,9 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1b
       CidrBlock: '10.0.1.0/24'
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '791db6b0-7e62-45fe-b0ff-92c499d1e428'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-PublicSubnet1B'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicSubnet1B'
 
   MyPrivateSubnet1A:
     Type: 'AWS::EC2::Subnet'
@@ -45,12 +36,9 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1a
       CidrBlock: '10.0.2.0/24'
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '4fd44846-9123-4db2-bf11-46204e4a2485'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-PrivateSubnet1A'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateSubnet1A'
 
   MyPrivateSubnet1B:
     Type: 'AWS::EC2::Subnet'
@@ -58,42 +46,26 @@ Resources:
       VpcId: !Ref MyVPC
       AvailabilityZone: us-east-1b
       CidrBlock: '10.0.3.0/24'
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '0a868f92-7e22-4a48-ae7d-23e99db56d8a'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-PrivateSubnet1B'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateSubnet1B'
 
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     Properties:
-      Metadata:
-        AWS::CloudFormation::Designer:
-          id: '139888da-fc4c-4e0f-ae68-25e8e60cc118'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-InternetGateway'
-
   MyGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'd7dd50c7-7987-4bcf-91f0-7e948d1487f4'
 
   MyPublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '4f33be2b-af7e-4f09-9a3f-d877f15de24c'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-PublicRouteTable'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicRouteTable'
 
   MyPublicRoute:
     Type: 'AWS::EC2::Route'
@@ -102,20 +74,14 @@ Resources:
       RouteTableId: !Ref MyPublicRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref MyInternetGateway
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'ebd4c2dd-d29c-4e2e-899e-5297c2f89845'
 
   MyPrivateRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '8e3330a7-2e1c-4e5d-80e3-26f88c4a8b1c'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-PrivateRouteTable'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateRouteTable'
 
   MyPrivateRoute1A:
     Type: 'AWS::EC2::Route'
@@ -123,9 +89,6 @@ Resources:
       RouteTableId: !Ref MyPrivateRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1A
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '0f79a997-5f2c-4680-9b97-d4ab9b8a3f2e'
 
   MyPrivateRoute1B:
     Type: 'AWS::EC2::Route'
@@ -133,64 +96,43 @@ Resources:
       RouteTableId: !Ref MyPrivateRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1B
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '1c065b0e-62c9-4d20-92f5-9c1c166a7128'
 
   MyNatGateway1A:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt MyEIP1A.AllocationId
       SubnetId: !Ref MyPublicSubnet1A
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '8a2e0c22-3be2-4d6f-832a-597d4089b8c7'
 
   MyNatGateway1B:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt MyEIP1B.AllocationId
       SubnetId: !Ref MyPublicSubnet1B
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '139a2e9a-ff49-4d92-8a9f-af15dcf97622'
 
   MyPrivateSubnet1AAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       SubnetId: !Ref MyPrivateSubnet1A
       RouteTableId: !Ref MyPrivateRouteTable
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: '48ff2ce5-4fd2-4492-9ea3-0fe37077a1f5'
 
   MyPrivateSubnet1BAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       SubnetId: !Ref MyPrivateSubnet1B
       RouteTableId: !Ref MyPrivateRouteTable
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'fb4250e4-3c7a-4f88-86e5-7b7ad628f671'
 
   MyEIP1A:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: 'vpc'
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'f9253d02-77b9-4023-b5bb-30a0b5b4db59'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-ElasticIP1A'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-ElasticIP1A'
 
   MyEIP1B:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: 'vpc'
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 'f0a94ccf-8711-4fa2-a2e2-4dfeebc4e737'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-ElasticIP1B'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-ElasticIP1B'
