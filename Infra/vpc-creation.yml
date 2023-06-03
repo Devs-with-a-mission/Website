@@ -1,8 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Globals:
-  Function:
-    Timeout: 15
 Parameters:
   Version:
     Type: String
@@ -41,6 +38,7 @@ Mappings:
   ListenerPortMap:
     us-east-1: 
       "dev": "8080"
+
 Resources:
   MyVPC:
     Type: AWS::EC2::VPC
