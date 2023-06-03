@@ -39,7 +39,14 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
-    - name: Deploy to AWS CloudFormation
+    - name: Creating VPC
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: Website-ci-dev-1
+        template: Infra/vpc-creation.yml
+        capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
+
+    - name: Deploy Infra
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: Website-ci-dev-1
