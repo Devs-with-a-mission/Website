@@ -1,19 +1,4 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Parameters:
-  Version:
-    Type: String
-    Default: "v1"
-  ServiceName:
-    Type: String
-    Default: devs-withmission
-  Stage:
-    Type: String
-    Default: dev
-    AllowedValues:
-      - prd 
-      - dev
-    Description: Definição do ambiente
-
 Resources:
   MyVPC:
     Type: AWS::EC2::VPC
@@ -97,58 +82,66 @@ Resources:
       SubnetId: !Ref MySubnet1B
       RouteTableId: !Ref MyPublicRouteTable
 
-  # Criação do grupo de segurança
-  SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Devs With Mission Security Group
-      VpcId: !FindInMap [VpcMap, !Ref "AWS::Region", !Ref Stage]
-      
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Sub "${ServiceName}-tg-${Stage}"
-      Port: 80
-      Protocol: HTTP
-      TargetType: instance
-      VpcId: !Ref MyVPC
-
-  LoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: !Sub "${ServiceName}-lb-${Stage}"
-      Subnets:
-        - !Ref MySubnet1A
-        - !Ref MySubnet1B
-      SecurityGroups:
-        - !Ref LoadBalancerSecurityGroup
-      Tags:
-        - Key: Name
-          Value: !Sub "${ServiceName}-lb-${Stage}"
-      Type: application
-
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP access via port 80
+      GroupDescription: Security group for the load balancer
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
-    Cluster:
+          SourceSecurityGroupId: !Ref SecurityGroup
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${ServiceName}-tg-${Stage}"
+      Port: 3000
+      Protocol: HTTP
+      TargetType: ip
+      VpcId: !Ref MyVPC
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      Name: !Sub "${ServiceName}-alb-${Stage}"
+      Scheme: internal
+      Type: application
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets:
+        - !Ref MySubnet1A
+        - !Ref MySubnet1B
+      Tags:
+        - Key: "Ambiente"
+          Value: !Ref Stage
+        - Key: "Name"
+          Value: !Ref AppName
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 8080
+      Protocol: HTTP
+
+  Cluster:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Sub "${AppName}-${Stage}"
       ClusterSettings:
         - Name: containerInsights
-          Value: enabled 
+          Value: enabled
       Tags:
         - Key: "Ambiente"
-          Value: !Ref Stage 
+          Value: !Ref Stage
         - Key: "Name"
-          Value: !Ref AppName 
+          Value: !Ref AppName
 
   Policy:
     Type: AWS::IAM::ManagedPolicy
@@ -164,7 +157,7 @@ Resources:
               - 'ecr:*'
               - 'logs:*'
             Resource: '*'
-  
+
   Role:
     Type: AWS::IAM::Role
     Properties:
@@ -181,9 +174,9 @@ Resources:
 
   EcsLogGroup:
     Type: AWS::Logs::LogGroup
-    Properties: 
-      LogGroupName: !Sub "/ecs/${ServiceName}-${Stage}"  
-      RetentionInDays: 30 
+    Properties:
+      LogGroupName: !Sub "/ecs/${ServiceName}-${Stage}"
+      RetentionInDays: 30
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -198,55 +191,52 @@ Resources:
             - HostPort: 3000
               Protocol: tcp
               ContainerPort: 3000
-          Essential: true 
+          Essential: true
           Environment:
-            - Name: ENV 
-              Value: dev  
-            - Name: PORT 
+            - Name: ENV
+              Value: dev
+            - Name: PORT
               Value: 3000
           LogConfiguration:
-            LogDriver: awslogs 
+            LogDriver: awslogs
             Options:
-              awslogs-group: !Ref EcsLogGroup 
+              awslogs-group: !Ref EcsLogGroup
               awslogs-region: !Ref "AWS::Region"
-              awslogs-stream-prefix: ecs 
-
+              awslogs-stream-prefix: ecs
       Cpu: "512"
-      Memory: "1024"      
-      Family: !Ref AppName 
-      NetworkMode: awsvpc 
+      Memory: "1024"
+      Family: !Ref AppName
+      NetworkMode: awsvpc
       RequiresCompatibilities:
-        - FARGATE 
+        - FARGATE
       ExecutionRoleArn: !Ref Role
-      TaskRoleArn: !Ref Role   
+      TaskRoleArn: !Ref Role
 
   Service:
-  Type: AWS::ECS::Service
-  DependsOn: LoadBalancer
-  Properties:
-    Cluster: !Ref Cluster
-    DeploymentConfiguration:
-      MaximumPercent: 200
-      MinimumHealthyPercent: 100
-    DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
-    LaunchType: FARGATE
-    LoadBalancers:
-      - ContainerName: !Sub "${ServiceName}_container"
-        ContainerPort: 3000
-        TargetGroupArn: !Ref TargetGroup
-    NetworkConfiguration:
-      AwsvpcConfiguration:
-        AssignPublicIp: ENABLED
-        SecurityGroups:
-          - !Ref FargateHtppSecurityGroup
-        Subnets:
-          - !FindInMap [PrivateSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
-          - !FindInMap [PublicSubnetMapAZ, !Ref "AWS::Region", !Ref Stage]
-    PlatformVersion: LATEST
-    ServiceName: !Sub "${ServiceName}_${Stage}"
-    TaskDefinition: !Ref TaskDefinition
-
-
+    Type: AWS::ECS::Service
+    DependsOn: Listener
+    Properties:
+      Cluster: !Ref Cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !FindInMap [FargateNodes, !Ref "AWS::Region", !Ref Stage]
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: !Sub "${ServiceName}_container"
+          ContainerPort: 3000
+          TargetGroupArn: !Ref TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !Ref TaskSecurityGroup
+          Subnets:
+            - !Ref MySubnet1A
+            - !Ref MySubnet1B
+      PlatformVersion: LATEST
+      ServiceName: !Sub "${ServiceName}_${Stage}"
+      TaskDefinition: !Ref TaskDefinition
 
 Outputs:
   VpcId:
@@ -255,5 +245,11 @@ Outputs:
     Value: !Ref MySubnet1A
   Subnet1B:
     Value: !Ref MySubnet1B
-  LoadBalancerDNS:
+  LoadBalancerDnsName:
     Value: !GetAtt LoadBalancer.DNSName
+  TargetGroupArn:
+    Value: !Ref TargetGroup
+  SecurityGroupId:
+    Value: !Ref LoadBalancerSecurityGroup
+  TaskSecurityGroupId:
+    Value: !Ref TaskSecurityGroup
