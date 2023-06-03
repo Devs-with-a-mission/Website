@@ -62,9 +62,6 @@ Resources:
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-GatewayAttachment'
 
   MyPublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
@@ -81,9 +78,6 @@ Resources:
       RouteTableId: !Ref MyPublicRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref MyInternetGateway
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PublicRoute'
 
   MyPrivateRouteTable:
     Type: 'AWS::EC2::RouteTable'
@@ -99,9 +93,6 @@ Resources:
       RouteTableId: !Ref MyPrivateRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1A
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateRoute1A'
 
   MyPrivateRoute1B:
     Type: 'AWS::EC2::Route'
@@ -109,27 +100,18 @@ Resources:
       RouteTableId: !Ref MyPrivateRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1B
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-PrivateRoute1B'
 
   MyNatGateway1A:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt MyEIP1A.AllocationId
       SubnetId: !Ref MyPublicSubnet1A
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-NatGateway1A'
 
   MyNatGateway1B:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt MyEIP1B.AllocationId
       SubnetId: !Ref MyPublicSubnet1B
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-NatGateway1B'
 
   MyPrivateSubnet1AAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
