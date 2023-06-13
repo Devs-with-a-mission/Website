@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
 Resources:
   MyVPC:
     Type: 'AWS::EC2::VPC'
@@ -53,9 +54,9 @@ Resources:
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     Properties:
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-InternetGateway'
+      Tags:
+        - Key: 'Name'
+          Value: 'devs-with-mission-InternetGateway'
 
   MyGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
