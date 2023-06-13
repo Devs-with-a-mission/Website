@@ -31,19 +31,19 @@ Mappings:
       "dev": "024177866594.dkr.ecr.us-east-1.amazonaws.com/devs-with-mission:latest"
   VpcMap:
     us-east-1:
-      "dev": "vpc-0eb3f4f2e5bc27896"
+      "dev": "vpc-02c9816eb972807b1"
   NetworkLoadBalancerSecurityGroupMap:
     us-east-1: 
-      "dev": "sg-0ad5aff4d1389609e" 
+      "dev": "sg-0a2c5f15908a882ed" 
   FargateHtppSecurityGroupMap:
     us-east-1: 
-      "dev": "sg-0ad5aff4d1389609e"
+      "dev": "sg-0a2c5f15908a882ed"
   PrivateSubnetMapAZ:
     us-east-1: 
-      "dev": "subnet-0e14f7e0458f8fff4"            
+      "dev": "subnet-0d13afc4def7b6be2"            
   PublicSubnetMapAZ:
     us-east-1: 
-      "dev": "subnet-01bcca6490e257468"
+      "dev": "subnet-0fc0b8aa0ed8a8143"
   AvailabilityZone1:
     us-east-1: 
       "dev": "us-east-1a"

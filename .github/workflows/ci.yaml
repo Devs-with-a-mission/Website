@@ -52,7 +52,7 @@ jobs:
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: vpc-creation
-        template: Infra/vpc-creation1.yml
+        template: Infra/website.yml
         capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
 
     # - name: Deploy to AWS CloudFormation
