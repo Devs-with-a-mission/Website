@@ -149,6 +149,20 @@ Resources:
       - Key: 'Name'
         Value: 'devs-with-mission-EIP1B'
 
+  MySecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'My Security Group'
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: 'Name'
+          Value: 'devs-with-mission-SecurityGroup'
+
 Conditions:
   CreateDefaultRoute:
     !Not
@@ -181,3 +195,5 @@ Outputs:
     Value: !Ref MyEIP1A
   EIP1B:
     Value: !Ref MyEIP1B
+  SecurityGroupId:
+    Value: !Ref MySecurityGroup
