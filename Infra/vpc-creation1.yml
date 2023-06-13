@@ -82,7 +82,11 @@ Resources:
       SubnetId: !Ref MySubnet1B
       RouteTableId: !Ref MyPublicRouteTable
 
-
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for ECS Service
+      VpcId: !Ref MyVPC
 
 Outputs:
   VpcId:
@@ -90,4 +94,4 @@ Outputs:
   Subnet1A:
     Value: !Ref MySubnet1A
   Subnet1B:
-    Value: !Ref MySubnet1B
+    Value: !Ref MySub
