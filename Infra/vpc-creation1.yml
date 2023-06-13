@@ -52,10 +52,7 @@ Resources:
 
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
-    Properties:
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-InternetGateway'
+
     Metadata:
       'AWS::CloudFormation::Designer':
         id: '46b089ae-8e33-48a6-b179-7e7685b50c32'
