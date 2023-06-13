@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: '2010-09-09'
-
 Resources:
   MyVPC:
     Type: 'AWS::EC2::VPC'
@@ -158,10 +157,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: '0.0.0.0/0'
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-SecurityGroup'
+          CidrIp: 0.0.0.0/0
 
 Conditions:
   CreateDefaultRoute:
