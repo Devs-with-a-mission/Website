@@ -53,9 +53,12 @@ Resources:
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     Properties:
-      Tags:
-        - Key: 'Name'
-          Value: 'devs-with-mission-InternetGateway'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-InternetGateway'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: '46b089ae-8e33-48a6-b179-7e7685b50c32'
 
   MyGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
@@ -148,27 +151,6 @@ Resources:
       - Key: 'Name'
         Value: 'devs-with-mission-EIP1B'
 
-  MySecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: 'Allow inbound traffic on port 80'
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: '0.0.0.0/0'
-      VpcId: !Ref MyVPC
-    Tags:
-      - Key: 'Name'
-        Value: 'devs-with-mission-SecurityGroup'
-
-Conditions:
-  CreateDefaultRoute:
-    !Not
-      - !Equals
-        - !Ref MyNatGateway1A
-        - ''
-
 Outputs:
   VPCId:
     Value: !Ref MyVPC
@@ -194,5 +176,4 @@ Outputs:
     Value: !Ref MyEIP1A
   EIP1B:
     Value: !Ref MyEIP1B
-  SecurityGroupId:
-    Value: !Ref MySecurityGroup
+
