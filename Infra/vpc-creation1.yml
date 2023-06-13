@@ -28,18 +28,8 @@ Resources:
       AvailabilityZone: us-east-1a
       CidrBlock: '10.0.2.0/24'
 
-  MyPrivateSubnet1B:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: us-east-1b
-      CidrBlock: '10.0.3.0/24'
-
   MyInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: '46b089ae-8e33-48a6-b179-7e7685b50c32'
 
   MyGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
@@ -59,6 +49,7 @@ Resources:
       RouteTableId: !Ref MyPublicRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref MyInternetGateway
+    Condition: CreateDefaultRoute
 
   MyPrivateRouteTable:
     Type: 'AWS::EC2::RouteTable'
@@ -72,31 +63,13 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref MyNatGateway1A
 
-  MyPrivateRoute1B:
-    Type: 'AWS::EC2::Route'
-    Properties:
-      RouteTableId: !Ref MyPrivateRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref MyNatGateway1B
-
   MyNatGateway1A:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt MyEIP1A.AllocationId
       SubnetId: !Ref MyPublicSubnet1A
 
-  MyNatGateway1B:
-    Type: 'AWS::EC2::NatGateway'
-    Properties:
-      AllocationId: !GetAtt MyEIP1B.AllocationId
-      SubnetId: !Ref MyPublicSubnet1B
-
   MyEIP1A:
-    Type: 'AWS::EC2::EIP'
-    Properties:
-      Domain: 'vpc'
-
-  MyEIP1B:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: 'vpc'
@@ -110,8 +83,6 @@ Outputs:
     Value: !Ref MyPublicSubnet1B
   PrivateSubnet1AId:
     Value: !Ref MyPrivateSubnet1A
-  PrivateSubnet1BId:
-    Value: !Ref MyPrivateSubnet1B
   InternetGatewayId:
     Value: !Ref MyInternetGateway
   PublicRouteTableId:
@@ -120,9 +91,5 @@ Outputs:
     Value: !Ref MyPrivateRouteTable
   NatGateway1AId:
     Value: !Ref MyNatGateway1A
-  NatGateway1BId:
-    Value: !Ref MyNatGateway1B
   EIP1A:
     Value: !Ref MyEIP1A
-  EIP1B:
-    Value: !Ref MyEIP1B
