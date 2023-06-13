@@ -59,7 +59,7 @@ jobs:
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: Website-ci-dev-1
-        template: Infra/vpc-creation1.yml.yml
+        template: Infra/vpc-creation.yml.yml
         capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
           
        # parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
