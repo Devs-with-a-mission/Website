@@ -1,97 +1,182 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
   MyVPC:
-    Type: AWS::EC2::VPC
+    Type: 'AWS::EC2::VPC'
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: '10.0.0.0/16'
       EnableDnsSupport: true
       EnableDnsHostnames: true
-      Tags:
-        - Key: Name
-          Value: devs-with-mission-vpc
-          PropagateAtLaunch: true
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-VPC'
 
-  MySubnet1A:
-    Type: AWS::EC2::Subnet
+  MyPublicSubnet1A:
+    Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref MyVPC
-      CidrBlock: 10.0.0.0/24
       AvailabilityZone: us-east-1a
-      Tags:
-        - Key: Name
-          Value: devs-with-mission-subnet-1a
-          PropagateAtLaunch: true
+      CidrBlock: '10.0.0.0/24'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicSubnet1A'
 
-  MySubnet1B:
-    Type: AWS::EC2::Subnet
+  MyPublicSubnet1B:
+    Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref MyVPC
-      CidrBlock: 10.0.1.0/24
       AvailabilityZone: us-east-1b
-      Tags:
-        - Key: Name
-          Value: devs-with-mission-subnet-1b
-          PropagateAtLaunch: true
+      CidrBlock: '10.0.1.0/24'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicSubnet1B'
+
+  MyPrivateSubnet1A:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref MyVPC
+      AvailabilityZone: us-east-1a
+      CidrBlock: '10.0.2.0/24'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateSubnet1A'
+
+  MyPrivateSubnet1B:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref MyVPC
+      AvailabilityZone: us-east-1b
+      CidrBlock: '10.0.3.0/24'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateSubnet1B'
 
   MyInternetGateway:
-    Type: AWS::EC2::InternetGateway
+    Type: 'AWS::EC2::InternetGateway'
     Properties:
-      Tags:
-        - Key: Name
-          Value: devs-with-mission-igw
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-InternetGateway'
 
-  MyVPCGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
+  MyGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-GatewayAttachment'
 
   MyPublicRouteTable:
-    Type: AWS::EC2::RouteTable
+    Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref MyVPC
-      Tags:
-        - Key: Name
-          Value: devs-with-mission-public-rt
-
-  MyPrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref MyVPC
-      Tags:
-        - Key: Name
-          Value: devs-with-mission-private-rt
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicRouteTable'
 
   MyPublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn: MyVPCGatewayAttachment
+    Type: 'AWS::EC2::Route'
+    DependsOn: MyGatewayAttachment
     Properties:
       RouteTableId: !Ref MyPublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref MyInternetGateway
+    Condition: CreateDefaultRoute
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PublicRoute'
 
-  MyPublicSubnet1ARouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
+  MyPrivateRouteTable:
+    Type: 'AWS::EC2::RouteTable'
     Properties:
-      SubnetId: !Ref MySubnet1A
-      RouteTableId: !Ref MyPublicRouteTable
-
-  MyPublicSubnet1BRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref MySubnet1B
-      RouteTableId: !Ref MyPublicRouteTable
-
-  MySecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security Group for ECS Service
       VpcId: !Ref MyVPC
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateRouteTable'
+
+  MyPrivateRoute1A:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref MyPrivateRouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      NatGatewayId: !Ref MyNatGateway1A
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateRoute1A'
+
+  MyPrivateRoute1B:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref MyPrivateRouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      NatGatewayId: !Ref MyNatGateway1B
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-PrivateRoute1B'
+
+  MyNatGateway1A:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt MyEIP1A.AllocationId
+      SubnetId: !Ref MyPublicSubnet1A
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-NatGateway1A'
+
+  MyNatGateway1B:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt MyEIP1B.AllocationId
+      SubnetId: !Ref MyPublicSubnet1B
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-NatGateway1B'
+
+  MyEIP1A:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: 'vpc'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-EIP1A'
+
+  MyEIP1B:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: 'vpc'
+    Tags:
+      - Key: 'Name'
+        Value: 'devs-with-mission-EIP1B'
+
+Conditions:
+  CreateDefaultRoute:
+    !Not
+      - !Equals
+        - !Ref MyNatGateway1A
+        - ''
 
 Outputs:
-  VpcId:
+  VPCId:
     Value: !Ref MyVPC
-  Subnet1A:
-    Value: !Ref MySubnet1A
-  Subnet1B:
-    Value: !Ref MySub
+  PublicSubnet1AId:
+    Value: !Ref MyPublicSubnet1A
+  PublicSubnet1BId:
+    Value: !Ref MyPublicSubnet1B
+  PrivateSubnet1AId:
+    Value: !Ref MyPrivateSubnet1A
+  PrivateSubnet1BId:
+    Value: !Ref MyPrivateSubnet1B
+  InternetGatewayId:
+    Value: !Ref MyInternetGateway
+  PublicRouteTableId:
+    Value: !Ref MyPublicRouteTable
+  PrivateRouteTableId:
+    Value: !Ref MyPrivateRouteTable
+  NatGateway1AId:
+    Value: !Ref MyNatGateway1A
+  NatGateway1BId:
+    Value: !Ref MyNatGateway1B
+  EIP1A:
+    Value: !Ref MyEIP1A
+  EIP1B:
+    Value: !Ref MyEIP1B
