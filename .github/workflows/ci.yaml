@@ -25,41 +25,35 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    # - name: Login to Amazon ECR
-    #   id: login-ecr
-    #   uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-    # - name: Build, tag, and push image to Amazon ECR
-    #   env:
-    #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-    #     ECR_REPOSITORY: devs-with-mission
-    #     IMAGE_TAG: latest
-    #   run: |
-    #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-    #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: devs-with-mission
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
    
-    # - name: Check if VPC stack already exists
-    #   id: check-vpc-stack
-    #   run: |
-    #     stack_status=$(aws cloudformation describe-stacks --stack-name VPCStack --query "Stacks[0].StackStatus" --output text || echo "DOES_NOT_EXIST")
-    #     if [[ $stack_status == "DOES_NOT_EXIST" ]]; then
-    #     echo "::set-output name=stack_exists::false"
-    #       else
-    #     echo "::set-output name=stack_exists::true"
-    #     fi
+ 
 
-    - name: Creating VPC
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
       with:
-        name: vpc-creation
-        template: Infra/website.yml
-        capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
+        terraform_version: 1.0.11
 
-    # - name: Deploy to AWS CloudFormation
-    #   uses: aws-actions/aws-cloudformation-github-deploy@v1
-    #   with:
-    #     name: Website-ci-dev-1
-    #     template: Infra/vp.yml
-    #     capabilities: CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND 
-          
-       # parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
+    - name: Terraform Init
+      run: terraform init
+      working-directory: Infra/terraform
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+      working-directory: Infra/terraform
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -input=false tfplan
+      working-directory: Infra/terraform
